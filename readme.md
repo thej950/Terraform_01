@@ -1,8 +1,8 @@
 # 📘 Terraform Notes – Index
 
 ### 🚀 Basics
-- [Terraform Introduction](./Notes/Intro#terraform-introduction) 
-- [Installation (Windows)](./Notes/Install#install-terraform-inside-windows)
+- [Terraform Introduction](./Notes/Intro.md#terraform-introduction) 
+- [Installation (Windows)](./Notes/Install.md#install-terraform-inside-windows)
 - [Access AWS Cloud From Local](./Notes/Locals#terraform-locals)
 - [AWS Credentials Setup](./Notes/Credentials#terraform-aws-credentials)
 
