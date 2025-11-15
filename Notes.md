@@ -34,6 +34,7 @@ provider "aws" {
     region     = "ap-south-1"
 }
 ```
+
 # Access AWS cloud from local system 
 - create a User with adminstratorAccess download Accesskey and seretAcessKey To conect aws cloud 
 - Download awscli tool in windows 
@@ -331,12 +332,13 @@ resource "aws_key_pair" "deployer" {
 ```
 Reference website: https://jhooq.com/terraform-dynamic-block/
 
-# To install terraform inside windows through CLI 
+# install terraform inside windows through CLI 
 ```powershell
 $ choco install terraform
 $ choco install awscli # this is for aws commands to work 
 ```
-# To install terraform inside windows 
+
+# install terraform inside windows 
 Refer Link: https://developer.hashicorp.com/terraform/install
 - setup environment path in windows to work terraform commands 
     
@@ -467,6 +469,7 @@ Reference From J-hooq website: https://jhooq.com/how-to-use-terraform-locals/
 
 ## Loops with Count:
 - Iterate List using count
+
 # To create multiple users using list 
 ```t
 variable "user_names" {
@@ -965,6 +968,7 @@ resource "aws_instance" "myec2" {
                     EOF
 }
 ```
+
 # Terraform Varaibles:
 1. Terraform variables are used to store values and re-used them whenever they required for multiple times also  To pass into aws resource section To provision 
 
@@ -1116,9 +1120,14 @@ variable "enable_public_ip" {
     default     = true
 }
 ```
-# Terraform variables - list, set, map when it comes to collection input variables 
 
-## List type varaibles 
+# Terraform variables - list, set, map 
+ - when it comes to collection input variables 
+1. list
+2. set
+3. map
+
+## 1.  List type varaibles 
 - list variables containe multiple values in a single format of variable 
 ```t
 # Syntax of List type variable 
@@ -1165,13 +1174,14 @@ resource "aws_iam_user" "iam-users" {
     name = "raju"
 }
 ```
-## 	Map variable type:
+
+## 2. 	Map variable type:
 - terraform supports the map variable type where we can define the key-value pair 
 - To use map varibales we can achive where we need to implement provosion in which environment suppose dev, test, prod environment like where we need to define project and environment, so we can use the map variable to achieve that 
 
-Syntax of map varible to use in tf file 
------------------------------------------
 ```t
+# Syntax of map varible to use in tf file 
+
 variable "project_environment" {
     description = "project name and environment"
     type        = map(string)
@@ -1208,6 +1218,7 @@ variable "project_environment" {
     }
 }
 ```		
+
 # varibale.tf and terraform.tfvars files:
 - In this variable.tf file is a specific file where we need to define our variables related to use in main.tf file example this file containe configuration which is required for main.tf file and also it containe optional default value for the variable 
 - in the previouse time we pass variable in same main.tf file but it is not Recommended use this way to pass variables 
@@ -1234,6 +1245,8 @@ resource "aws_instance" "ec2_example" {
     }
 }
 ```
+
+
 ```t
 # step2: Now create  $ vim folder-1/variable.tf file 
 variable "instance_type" {
