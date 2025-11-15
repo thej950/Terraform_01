@@ -201,45 +201,6 @@ provider "aws" {
 
 
 
-## **Key Features**
-- **Define Infrastructure State**: Helps create, manage, and maintain resources in a consistent state.
-- **Comparison to Ansible/Puppet/Chef**:
-  - Ansible/Puppet/Chef are more focused on managing operating system-level configurations (e.g., software installation, configuration files).
-  - Terraform focuses on managing infrastructure itself (e.g., VMs, networking, load balancers).
-- **Automation**: Terraform integrates well with tools like Ansible for post-infrastructure setup tasks.
-- **Declarative Syntax**: Uses its own HashiCorp Configuration Language (HCL), similar to JSON, for defining infrastructure.
-
----
-
-## **State and Supporting Files**
-
-#### **1. terraform.tfstate**
-- Maintains the current state of the infrastructure as per the Terraform configuration.
-- Tracks information about created resources (e.g., EC2 instance IDs, IPs, etc.).
-- If a resource is destroyed, its details are automatically removed from this file.
-- Stored in **JSON format**.
-
-#### **2. terraform.tfstate.backup**
-- Stores a backup of the previous state file (`terraform.tfstate`) before any changes are applied.
-- Useful for recovering the state if the current `tfstate` file becomes corrupted.
-
-#### **3. terraform.lock.hcl**
-- Maintains the exact versions of providers and their dependencies used in the configuration.
-- Ensures consistency across environments or team members by locking the provider versions.
-
-#### **4. .terraform Directory**
-- Created after running `terraform init`.
-- Stores provider plugins and downloaded modules required for Terraform to operate.
-- Keeps dependencies for the current project configuration.
-
----
-
-## **Key Concepts**
-- **Declarative**: Define "what" the infrastructure should look like; Terraform figures out "how" to achieve it.
-- **Idempotent**: Running the same configuration multiple times results in the same infrastructure state.
-- **State Management**: Tracks the resources in the `tfstate` file to know what changes to apply or remove.
-
-
 > **NOTE:** Hardcoding keys is NOT recommended. Use environment variables or shared credentials.
 
 ---
