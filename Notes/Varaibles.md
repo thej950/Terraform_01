@@ -1,254 +1,419 @@
 # Terraform Varaibles:
-1. Terraform variables are used to store values and re-used them whenever they required for multiple times also  To pass into aws resource section To provision 
 
-## Types of variables:
-- there are two types of varibales 
+Terraform variables help you make your Terraform files flexible, reusable, and clean.
+There are two main categories of variables:
 
-1. simple value variable
-2. collection variables 
+**Types of variables:**
 
-- Simple value type variables are used to store only single value those are like ( string, number, bool ) 
-- Collection type varibales are used to store multile values in a single variable ( List, map, set ) 
-```t
-# To define variables inside main.tf file 
+Terraform variables help you make your Terraform files **flexible**, **reusable**, and **clean**.
+There are **two main categories** of variables:
 
-variables "<our_variable_name>" {
-    description	= "Instance type t2.micro"  ---------> Meaning Fule Description of the variable 
-    type		= string  ---------------------------> here type of the variables Ex: string, number, bool, list, set, map; 
-    default		= "t2.micro" ------------------------> variable default value 
+
+## ✅ **1. Simple Value Variables**
+
+Used to store **one single value**
+Types:
+
+* `string`
+* `number`
+* `bool`
+
+---
+
+## ✅ **2. Collection Variables**
+
+Used to store **multiple values**
+Types:
+
+* `list`
+* `map`
+* `set`
+
+---
+
+
+# 🧩 Structure of a Terraform Variable Block
+
+```hcl
+variable "<variable_name>" {
+  description = "Meaningful description of the variable"
+  type        = string | number | bool | list | map | set
+  default     = <default_value>
+}
 ```
-```t
-# To Pass string type variable inside main.tf file 
-# string type variable syntax:
+
+* `description` → What the variable is used for
+* `type` → Value type
+* `default` → Optional default value
+
+If no default is given → Terraform **expects user input**
+
+---
+
+
+# Examples Variable Usage ( **string, number, bool** )
+
+## 🔹 Example 1: String Type Variable
+
+### **Without variables (hardcoded EC2)**
+
+```hcl
+provider "aws" {
+  region     = "eu-central-1"
+  access_key = "<ACCESS_KEY>"
+  secret_key = "<SECRET_KEY>"
+}
+
+resource "aws_instance" "ec2_example" {
+  ami           = "ami-0767046d1677be5a0"
+  instance_type = "t2.micro"
+
+  tags = {
+    Name = "Terraform EC2"
+  }
+}
+```
+
+---
+
+### **With string variable (recommended)**
+
+### **main.tf**
+
+```hcl
+provider "aws" {
+  region     = "eu-central-1"
+  access_key = "<ACCESS_KEY>"
+  secret_key = "<SECRET_KEY>"
+}
+
+resource "aws_instance" "ec2_example" {
+  ami           = "ami-0767046d1677be5a0"
+  instance_type = var.instance_type
+
+  tags = {
+    Name = "Terraform EC2"
+  }
+}
+
 variable "instance_type" {
-    description = "Instance type t2.micro"
-    type        = string
-    default     = "t2.micro"
-} 
-```		
-```t
-# Below is the sample terraform file without using variables
-provider "aws" {
-    region     = "eu-central-1"
-    access_key = "<INSERT_YOUR_ACCESS_KEY>"
-    secret_key = "<INSERT_YOUR_SECRET_KEY>"
-}
-
-resource "aws_instance" "ec2_example" {
-    
-    ami           = "ami-0767046d1677be5a0"
-    instance_type = "t2.micro"
-    
-    tags = {
-            Name = "Terraform EC2"
-    }
-}
-```
------------------------------------------------------------
-from above For defining variable block you need
-description : Small or short description about the purpose of the variable
-type : What type of variable it is going to be ex - string, bool, number ...
-default : What would be the default value of the variable
-```t
-# To pass variables inside main.tf file 
-provider "aws" {
-    region     = "eu-central-1"
-    access_key = "<INSERT_YOUR_ACCESS_KEY>"
-    secret_key = "<INSERT_YOUR_SECRET_KEY>"
-}
-
-resource "aws_instance" "ec2_example" {
-
-    ami           = "ami-0767046d1677be5a0"
-    instance_type =  var.instance_type
-
-    tags = {
-            Name = "Terraform EC2"
-    }
-}
-
-variable "instance_type" {
-    description = "Instance type t2.micro"
-    type        = string
-    default     = "t2.micro"
+  description = "EC2 instance type"
+  type        = string
+  default     = "t2.micro"
 }
 ```
 
+✔ More flexible
+✔ Easy to update instance type
+✔ Good practice for production
 
-# To pass Number Type variables 
-1. Number type variable used for example like suppose we want create multiple instances 
-```t
-# sytax of Number type variable 
+---
+
+## 🔹 Example 2: Number Type Variable
+
+Number variables are used for:
+
+* EC2 count
+* Instance size values
+* Port numbers
+* CIDR block notation (when numeric)
+
+### **Define number variable**
+
+```hcl
 variable "instance_count" {
-    description = "EC2 instance count"
-    type        = number
-    default     = 2
-}  
-```
-```t
-# To use number type variable inside main.tf file 
-provider "aws" {
-    region     = "eu-central-1"
-    access_key = "<INSERT_YOUR_ACCESS_KEY>"
-    secret_key = "<INSERT_YOUR_SECRET_KEY>"
+  description = "Number of EC2 instances"
+  type        = number
+  default     = 2
 }
+```
 
+### **Use number variable in main.tf**
+
+```hcl
 resource "aws_instance" "ec2_example" {
+  ami           = "ami-0767046d1677be5a0"
+  instance_type = "t2.micro"
+  count         = var.instance_count
 
-    ami           = "ami-0767046d1677be5a0"
-    instance_type =  "t2.micro"
-    count = var.instance_count
-
-    tags = {
-            Name = "Terraform EC2"
-    }
+  tags = {
+    Name = "Terraform EC2"
+  }
 }
-
-variable "instance_count" {
-    description = "EC2 instance count"
-    type        = number
-    default     = 2
-} 
 ```
+
+Terraform will now create **2 EC2 instances**.
+
+---
+
+## 🔹 Example 3: Boolean Type Variable
+
+Boolean (`true/false`) variables are used for:
+
+* Enabling or disabling features
+* Attaching public IP
+* Toggling resources
+* Conditional logic
+
+### **Define boolean variable**
+
+```hcl
+variable "enable_public_ip" {
+  description = "Enable public IP address"
+  type        = bool
+  default     = true
+}
+```
+
+### **Use boolean variable**
+
+```hcl
+resource "aws_instance" "ec2_example" {
+  ami           = "ami-0767046d1677be5a0"
+  instance_type = "t2.micro"
+  count         = 1
+
+  associate_public_ip_address = var.enable_public_ip
+
+  tags = {
+    Name = "Terraform EC2"
+  }
+}
+```
+
+If `enable_public_ip = false` → no public IP will be attached.
+
+---
+
+## ⭐ Summary (Easy to Remember)
+
+| Variable Type        | Purpose           | Example               |
+| -------------------- | ----------------- | --------------------- |
+| **string**           | single text value | AMI ID, instance type |
+| **number**           | numeric values    | count, port number    |
+| **bool**             | true/false        | enable_public_ip      |
+| **list / map / set** | multiple values   | subnets, tags, AZs    |
+
+---
 		
-# Boolean type variable:
-- this bool variable are used to setup true or false values inside our terraform file 
-```t
-# syntax of bool variable in tf file 
-variable "enable_public_ip" {
-    description = "Enable public IP address"
-    type        = bool
-    default     = true
-}
-```
-```t
-# Below is the using bool varaible inside main.tf file  
-provider "aws" {
-    region     = "eu-central-1"
-    access_key = "<INSERT_YOUR_ACCESS_KEY>"
-    secret_key = "<INSERT_YOUR_SECRET_KEY>"
-}
 
+Here is a **clean, improved, simple-English version** of your content — using **only the information you provided**, nothing extra.
 
-resource "aws_instance" "ec2_example" {
+---
 
-    ami           = "ami-0767046d1677be5a0"
-    instance_type =  "t2.micro"
-    count = 1
-    associate_public_ip_address = var.enable_public_ip
+# Examaples of Collection Types  ( **List, Set, Map** )
 
-    tags = {
-            Name = "Terraform EC2"
-    }
+Terraform supports **collection-type variables** when you need to store **multiple values** inside a single variable.
+The main collection types are:
 
-}
+1. **List** → ordered list of values
+2. **Set** → unordered unique values (not used in your examples)
+3. **Map** → key-value pairs
 
-variable "enable_public_ip" {
-    description = "Enable public IP address"
-    type        = bool
-    default     = true
-}
-```
+---
 
-# Terraform variables - list, set, map 
- - when it comes to collection input variables 
-1. list
-2. set
-3. map
+## ✅ **1. List Type Variables**
 
-## 1.  List type varaibles 
-- list variables containe multiple values in a single format of variable 
-```t
-# Syntax of List type variable 
+A **list** stores multiple values in a single variable.
+Useful for multiple users, multiple subnets, multiple instance names, etc.
+
+### **Syntax**
+
+```hcl
 variable "user_names" {
-description = "IAM usernames"
-type        = list(string)
-default     = ["user1", "user2", "user3s"]
+  description = "IAM usernames"
+  type        = list(string)
+  default     = ["user1", "user2", "user3"]
 }
 ```
-```t
-# Below are used List type varibale in main.tf file 
+
+---
+
+### **Using List Variable in main.tf**
+
+```hcl
 provider "aws" {
-    region     = "eu-central-1"
-    access_key = "<INSERT_YOUR_ACCESS_KEY>"
-    secret_key = "<INSERT_YOUR_SECRET_KEY>"
+  region     = "eu-central-1"
+  access_key = "<INSERT_YOUR_ACCESS_KEY>"
+  secret_key = "<INSERT_YOUR_SECRET_KEY>"
 }
+
 resource "aws_instance" "ec2_example" {
+  ami           = "ami-0767046d1677be5a0"
+  instance_type = "t2.micro"
+  count         = 1
 
-    ami           = "ami-0767046d1677be5a0"
-    instance_type =  "t2.micro"
-    count = 1
-
-    tags = {
-            Name = "Terraform EC2"
-    }
-
+  tags = {
+    Name = "Terraform EC2"
+  }
 }
 
+# Create multiple IAM users from list
 resource "aws_iam_user" "example" {
-    count = length(var.user_names)
-    name  = var.user_names[count.index]
+  count = length(var.user_names)
+  name  = var.user_names[count.index]
 }
 
 variable "user_names" {
-    description = "IAM usernames"
-    type        = list(string)
-    default     = ["user1", "user2", "user3"]
+  description = "IAM usernames"
+  type        = list(string)
+  default     = ["user1", "user2", "user3"]
 }
 ```
-- from above main.tf file we are creating 3 IAM users 
-```t
-# To create a single user 
+
+✔ Output: Terraform will create **3 IAM users**.
+
+---
+
+### **Without list variable (single user)**
+
+```hcl
 resource "aws_iam_user" "iam-users" {
-    name = "raju"
+  name = "raju"
 }
 ```
 
-## 2. 	Map variable type:
-- terraform supports the map variable type where we can define the key-value pair 
-- To use map varibales we can achive where we need to implement provosion in which environment suppose dev, test, prod environment like where we need to define project and environment, so we can use the map variable to achieve that 
+---
 
-```t
-# Syntax of map varible to use in tf file 
+## ✅ **2. Map Type Variables**
 
+A **map** stores **key–value pairs**.
+Useful for passing environment details, tags, metadata, etc.
+
+### **Syntax**
+
+```hcl
 variable "project_environment" {
-    description = "project name and environment"
-    type        = map(string)
-    default     = {
+  description = "project name and environment"
+  type        = map(string)
+  default     = {
     project     = "project-alpha",
     environment = "dev"
-    }
+  }
 }
 ```
 
-```t
-# To use map varibales in main.tf file 
+---
+
+### **Using Map Variable in main.tf**
+
+```hcl
 provider "aws" {
-    region     = "eu-central-1"
-    access_key = "<INSERT_YOUR_ACCESS_KEY>"
-    secret_key = "<INSERT_YOUR_SECRET_KEY>"
+  region     = "eu-central-1"
+  access_key = "<INSERT_YOUR_ACCESS_KEY>"
+  secret_key = "<INSERT_YOUR_SECRET_KEY>"
 }
+
 resource "aws_instance" "ec2_example" {
+  ami           = "ami-0767046d1677be5a0"
+  instance_type = "t2.micro"
 
-    ami           = "ami-0767046d1677be5a0"
-    instance_type =  "t2.micro"
-
-    tags = var.project_environment
-
+  tags = var.project_environment
 }
-
 
 variable "project_environment" {
-    description = "project name and environment"
-    type        = map(string)
-    default     = {
+  description = "project name and environment"
+  type        = map(string)
+  default     = {
     project     = "project-alpha",
     environment = "dev"
-    }
+  }
 }
-```		
+```
 
-Here is a **better, simple-English, interview-friendly version** of your topic **Terraform Variables (variable.tf)** with analogy + scenario-based Q&A.
+✔ Output: Instance will have tags:
+
+```
+project = project-alpha
+environment = dev
+```
+---
+
+## 🚀 Terraform Variables – **Set Type Variable**
+
+A **set** is similar to a list, but it has two differences:
+
+1. **Order does not matter**
+2. **All values must be unique**
+
+Use `set` when:
+
+* You want unique values
+* Order does not matter
+* You do not need duplicates
+
+Example use cases:
+
+* Unique usernames
+* Unique availability zones
+* Unique CIDR blocks
+
+---
+
+## ✅ **Set Variable Syntax**
+
+```hcl
+variable "allowed_ports" {
+  description = "Unique list of allowed ports"
+  type        = set(number)
+  default     = [22, 80, 443]
+}
+```
+
+✔ The values **must be unique**
+✔ Order does **not** matter
+
+---
+
+## 🧩 **Using Set Variable in main.tf**
+
+Below example creates inbound rules for each port in a security group.
+
+```hcl
+provider "aws" {
+  region     = "eu-central-1"
+  access_key = "<INSERT_YOUR_ACCESS_KEY>"
+  secret_key = "<INSERT_YOUR_SECRET_KEY>"
+}
+
+resource "aws_security_group" "example_sg" {
+  name = "example-sg"
+
+  dynamic "ingress" {
+    for_each = var.allowed_ports
+    content {
+      from_port   = ingress.value
+      to_port     = ingress.value
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  }
+}
+
+variable "allowed_ports" {
+  description = "Unique list of allowed ports"
+  type        = set(number)
+  default     = [22, 80, 443]
+}
+```
+
+✔ This will create **3 inbound rules**:
+
+* port 22
+* port 80
+* port 443
+
+The order may vary, because **set is unordered**.
+
+---
+
+## ⭐ Summary
+
+| Type     | Stores          | Unique?             | Ordered? | Good for                  |
+| -------- | --------------- | ------------------- | -------- | ------------------------- |
+| **list** | multiple values | no                  | yes      | usernames, instance types |
+| **set**  | multiple values | yes                 | no       | ports, unique IDs         |
+| **map**  | key-value pairs | keys must be unique | yes      | tags, metadata            |
 
 ---
 
